@@ -1,0 +1,94 @@
+package net.badgersmc.votes.infrastructure.persistence
+
+import net.badgersmc.votes.application.VoteRepository
+import net.badgersmc.votes.domain.PlayerStats
+import net.badgersmc.votes.domain.VoteRecord
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.Instant
+import java.util.UUID
+
+class SqliteVoteRepository(
+    private val databaseFactory: DatabaseFactory,
+) : VoteRepository {
+
+    private val db get() = databaseFactory.database
+
+    override fun saveVote(record: VoteRecord) {
+        transaction(db) {
+            SchemaUtils.createMissingTablesAndColumns(VoteTable, PlayerStatsTable)
+
+            VoteTable.insert {
+                it[playerUuid] = record.playerUuid.toString()
+                it[playerName] = record.playerName
+                it[serviceName] = record.serviceName
+                it[timestamp] = record.timestamp.epochSecond
+                it[goldAwarded] = record.goldAwarded
+            }
+
+            val existing = PlayerStatsTable.selectAll()
+                .where { PlayerStatsTable.playerUuid eq record.playerUuid.toString() }
+                .singleOrNull()
+
+            if (existing != null) {
+                val newStreak = computeNewStreak(record.playerUuid, record.timestamp)
+                PlayerStatsTable.update({ PlayerStatsTable.playerUuid eq record.playerUuid.toString() }) {
+                    it[totalVotes] = existing[PlayerStatsTable.totalVotes] + 1
+                    it[currentStreak] = newStreak
+                    it[bestStreak] = maxOf(existing[PlayerStatsTable.bestStreak], newStreak)
+                    it[lastVoteAt] = record.timestamp.epochSecond
+                }
+            } else {
+                PlayerStatsTable.insert {
+                    it[playerUuid] = record.playerUuid.toString()
+                    it[totalVotes] = 1
+                    it[currentStreak] = 1
+                    it[bestStreak] = 1
+                    it[lastVoteAt] = record.timestamp.epochSecond
+                }
+            }
+        }
+    }
+
+    override fun getStats(uuid: UUID): PlayerStats = transaction(db) {
+        val row = PlayerStatsTable.selectAll()
+            .where { PlayerStatsTable.playerUuid eq uuid.toString() }
+            .singleOrNull()
+        row?.let { toPlayerStats(it) } ?: PlayerStats(playerUuid = uuid)
+    }
+
+    override fun getTotalVotes(uuid: UUID): Int = transaction(db) {
+        VoteTable.selectAll()
+            .where { VoteTable.playerUuid eq uuid.toString() }
+            .count().toInt()
+    }
+
+    override fun getTopVoters(limit: Int): List<PlayerStats> = transaction(db) {
+        PlayerStatsTable.selectAll()
+            .orderBy(PlayerStatsTable.totalVotes, SortOrder.DESC)
+            .limit(limit)
+            .map { toPlayerStats(it) }
+    }
+
+    override fun getTotalServerVotes(): Int = transaction(db) {
+        VoteTable.selectAll().count().toInt()
+    }
+
+    private fun toPlayerStats(row: ResultRow): PlayerStats = PlayerStats(
+        playerUuid = UUID.fromString(row[PlayerStatsTable.playerUuid]),
+        totalVotes = row[PlayerStatsTable.totalVotes],
+        currentStreak = row[PlayerStatsTable.currentStreak],
+        bestStreak = row[PlayerStatsTable.bestStreak],
+        lastVoteAt = row[PlayerStatsTable.lastVoteAt]?.let {
+            Instant.ofEpochSecond(it)
+        },
+    )
+
+    private fun computeNewStreak(uuid: UUID, now: Instant): Int {
+        val existing = getStats(uuid)
+        val last = existing.lastVoteAt ?: return 1
+        val hoursSince = java.time.Duration.between(last, now).toHours()
+        return if (hoursSince in 1..36) existing.currentStreak + 1 else 1
+    }
+}

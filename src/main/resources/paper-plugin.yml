@@ -1,0 +1,25 @@
+name: EnthusiaVotes
+version: '${version}'
+main: net.badgersmc.votes.infrastructure.bukkit.EnthusiaVotesPlugin
+loader: net.badgersmc.votes.loader.EnthusiaVotesLoader
+api-version: '1.21'
+authors: [BadgersMC]
+description: Vote rewards plugin for EnthusiaSMP — streaks, vote parties, and Raw Gold payouts.
+load: STARTUP
+dependencies:
+  server:
+    NuVotifier:
+      load: BEFORE
+      required: true
+      join-classpath: true
+    PlaceholderAPI:
+      load: BEFORE
+      required: false
+      join-classpath: true
+permissions:
+  enthusiavotes.vote:
+    description: Allow receiving vote rewards.
+    default: true
+  enthusiavotes.admin:
+    description: Admin commands for managing votes.
+    default: op
