@@ -28,7 +28,7 @@ class MiningListener(
         val bonusOres = (multiplier - 1.0).toInt().let { base ->
             val fractional = (multiplier - 1.0) - base
             if (fractional > 0 && Math.random() < fractional) base + 1 else base
-        }.coerceAtLeast(1)
+        }
         if (bonusOres > 0) {
             block.world.dropItemNaturally(block.location, ItemStack(Material.RAW_GOLD, bonusOres))
         }
