@@ -1,14 +1,9 @@
 # EnthusiaVotes — en_US locale.
-#
-# All values are MiniMessage strings. See https://docs.advntr.dev/minimessage/format.html
-# Placeholders use <name> syntax and are populated at call site, e.g. <player>, <total>.
-#
-# Bedrock/Cumulus paths render these to legacy §-codes via LegacyComponentSerializer.
 
 prefix: "<gradient:#FF7272:#FFC976><shadow:#000000:1>[Vot</shadow></gradient><#FFC976><shadow:#000000:1>es]</shadow></#FFC976> "
 
 vote:
-  reminder: "<shadow:#000000:1><gradient:#FF7272:#FFC976>▶</gradient> <yellow>Don't forget to vote! Total server votes: <white><total></white></yellow></shadow>"
+  reminder: "<shadow:#000000:1><gradient:#FF7272:#FFC976>▶</gradient> <yellow>Don't forget to vote! Total server votes: <white><total></white>  <click:run_command:'/votesites'><green>[Click to see sites]</green></click></yellow></shadow>"
   stats:
     header: "<shadow:#000000:1><gold>▶</gold> <yellow>Your Vote Stats, <player></yellow></shadow>"
     total: "<shadow:#000000:1> <gray>Total Votes:</gray> <white><total></white></shadow>"
@@ -17,7 +12,8 @@ vote:
     multiplier: "<shadow:#000000:1> <gray>Mining Multiplier:</gray> <white><multiplier>x</white></shadow>"
     empty_separator: "<shadow:#000000:1></shadow>"
     site_header: "<shadow:#000000:1><gold>▶</gold> <yellow>Vote Sites</yellow></shadow>"
-    site_entry: "<shadow:#000000:1> <gold>▶</gold> <aqua><name></aqua> <gray>- <click:open_url:'<url>'>Click to vote!</click></gray></shadow>"
+    site_entry_voted: "<shadow:#000000:1> <green>[✓]</green> <gray><name></gray>  <dark_gray>[Already Voted]</dark_gray></shadow>"
+    site_entry_unvoted: "<shadow:#000000:1> <#AAAAAA>[✗]</#AAAAAA> <gray><name></gray>  <click:open_url:'<url>'><green><bold>[Click Here]</bold></green></click></shadow>"
 
 votetop:
   header: "<shadow:#000000:1><gold>▶</gold> <yellow>Top Voters</yellow></shadow>"
@@ -25,7 +21,8 @@ votetop:
 
 votesites:
   header: "<shadow:#000000:1><gold>▶</gold> <yellow>Vote for us!</yellow></shadow>"
-  site_entry: "<shadow:#000000:1> <gold>▶</gold> <aqua><name></aqua> <gray>- <click:open_url:'<url>'>Click to vote!</click></gray></shadow>"
+  site_entry_voted: "<shadow:#000000:1> <green>[✓]</green> <gray><name></gray>  <dark_gray>[Already Voted]</dark_gray></shadow>"
+  site_entry_unvoted: "<shadow:#000000:1> <#AAAAAA>[✗]</#AAAAAA> <gray><name></gray>  <click:open_url:'<url>'><green><bold>[Click Here]</bold></green></click></shadow>"
 
 admin:
   header: "<shadow:#000000:1><gold>=== EnthusiaVotes Admin ===</gold></shadow>"

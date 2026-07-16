@@ -16,7 +16,7 @@ class VoteSitesBukkitCommand(
             return true
         }
 
-        val message = voteSitesCommand.execute()
+        val message = voteSitesCommand.execute(sender.uniqueId)
         sender.sendMessage(message)
         return true
     }
