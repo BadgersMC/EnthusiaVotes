@@ -6,6 +6,7 @@ import net.badgersmc.votes.infrastructure.config.MariaDbConfig
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import javax.sql.DataSource
 
@@ -80,9 +81,28 @@ object PlayerStatsTable : Table("player_stats") {
     override val primaryKey = PrimaryKey(playerUuid)
 }
 
+object OfflineVoteTable : Table("offline_votes") {
+    val playerUuid = text("player_uuid")
+    val gold = integer("gold")
+    val createdAt = long("created_at")
+
+    override val primaryKey = PrimaryKey(playerUuid)
+}
+
+object VotePartyTable : Table("vote_party") {
+    val active = bool("active")
+    val currentVotes = integer("current_votes")
+    val threshold = integer("threshold")
+    val startedAt = long("started_at").nullable()
+}
+
 object Migrations {
-    fun run() {
-        DatabaseFactory::class.java // forces lazy init check
-        // Tables are created lazily via application code
+    fun run(database: Database) {
+        // Create all tables up front so hot paths don't run schema checks
+        transaction(database) {
+            SchemaUtils.createMissingTablesAndColumns(
+                VoteTable, PlayerStatsTable, OfflineVoteTable, VotePartyTable,
+            )
+        }
     }
 }
