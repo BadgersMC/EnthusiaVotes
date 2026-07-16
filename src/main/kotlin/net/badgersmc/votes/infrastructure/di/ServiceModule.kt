@@ -4,10 +4,8 @@ import net.badgersmc.nexus.i18n.LangService
 import net.badgersmc.nexus.i18n.Locale
 import net.badgersmc.nexus.scheduler.NexusScheduler
 import net.badgersmc.votes.application.*
-import net.badgersmc.votes.infrastructure.bukkit.BukkitGoldDelivery
 import net.badgersmc.votes.infrastructure.bukkit.EnthusiaVotesPlugin
-import net.badgersmc.votes.infrastructure.bukkit.OfflineVoteLoginListener
-import net.badgersmc.votes.infrastructure.bukkit.ProxiedDeliveryService
+import net.badgersmc.votes.infrastructure.bukkit.MiningListener
 import net.badgersmc.votes.infrastructure.bukkit.VoteReminder
 import net.badgersmc.votes.infrastructure.bukkit.VotifierVoteListener
 import net.badgersmc.votes.infrastructure.config.VoteConfig
@@ -89,19 +87,15 @@ class ServiceModule(
     }
 
     val rewardService: RewardService by lazy {
-        RewardService(voteConfig, votePartyService, lang)
+        RewardService(voteRepository, votePartyService, lang)
     }
 
     val voteBroadcaster: VoteBroadcaster by lazy {
         BukkitVoteBroadcaster()
     }
 
-    val goldDelivery: GoldDelivery by lazy {
-        plugin.proxiedDeliveryService ?: BukkitGoldDelivery()
-    }
-
     val voteService: VoteService by lazy {
-        VoteService(voteRepository, rewardService, voteBroadcaster, goldDelivery, votePartyService, voteConfig, lang)
+        VoteService(voteRepository, rewardService, voteBroadcaster, votePartyService, voteConfig, lang)
     }
 
     val bedrockVoteForm: BedrockVoteForm by lazy {
@@ -117,8 +111,8 @@ class ServiceModule(
         VotifierVoteListener(voteService)
     }
 
-    val offlineVoteLoginListener: OfflineVoteLoginListener by lazy {
-        OfflineVoteLoginListener(voteRepository, goldDelivery, lang)
+    val miningListener: MiningListener by lazy {
+        MiningListener(rewardService, lang)
     }
 
     val placeholderExpansion: EnthusiaVotesExpansion by lazy {

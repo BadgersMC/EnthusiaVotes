@@ -30,13 +30,13 @@ class EnthusiaVotesPlugin : JavaPlugin() {
         services = ServiceModule(this)
 
         // Register proxy plugin messaging channels
-        val proxiedDelivery = ProxiedDeliveryService(this, BukkitGoldDelivery())
+        val proxiedDelivery = ProxiedDeliveryService(this)
         proxiedDelivery.register()
         proxiedDeliveryService = proxiedDelivery
 
         server.commandMap.register(
             "vote",
-            VoteBukkitCommand(services.voteCommand, services.bedrockVoteForm, services.lang),
+            VoteBukkitCommand(services.voteCommand, services.bedrockVoteForm, services.lang, services.rewardService),
         )
 
         server.commandMap.register(
@@ -55,7 +55,7 @@ class EnthusiaVotesPlugin : JavaPlugin() {
         )
 
         server.pluginManager.registerEvents(services.voteListener, this)
-        server.pluginManager.registerEvents(services.offlineVoteLoginListener, this)
+        server.pluginManager.registerEvents(services.miningListener, this)
 
         // Register PlaceholderAPI expansion if PAPI is present
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {

@@ -1,6 +1,7 @@
 package net.badgersmc.votes.infrastructure.bukkit
 
 import net.badgersmc.nexus.i18n.LangService
+import net.badgersmc.votes.application.RewardService
 import net.badgersmc.votes.application.VoteCommand
 import net.badgersmc.votes.infrastructure.form.BedrockVoteForm
 import org.bukkit.command.Command
@@ -11,6 +12,7 @@ class VoteBukkitCommand(
     private val voteCommand: VoteCommand,
     private val bedrockForm: BedrockVoteForm,
     private val lang: LangService,
+    private val rewardService: RewardService,
 ) : Command("vote") {
     override fun execute(sender: CommandSender, label: String, args: Array<out String>): Boolean {
         if (sender !is Player) {
@@ -21,7 +23,7 @@ class VoteBukkitCommand(
         if (BedrockVoteForm.isBedrockPlayer(sender)) {
             bedrockForm.open(sender)
         } else {
-            val message = voteCommand.execute(sender.name, sender.uniqueId)
+            val message = voteCommand.execute(sender.name, sender.uniqueId, rewardService)
             sender.sendMessage(message)
         }
         return true

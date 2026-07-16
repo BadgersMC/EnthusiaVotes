@@ -93,39 +93,6 @@ class SqliteVoteRepository(
         return if (hoursSince in 1..36) existing.currentStreak + 1 else 1
     }
 
-    override fun queueOfflineGold(uuid: UUID, gold: Int) {
-        transaction(db) {
-            val existing = OfflineVoteTable.selectAll()
-                .where { OfflineVoteTable.playerUuid eq uuid.toString() }
-                .singleOrNull()
-            if (existing != null) {
-                OfflineVoteTable.update({ OfflineVoteTable.playerUuid eq uuid.toString() }) {
-                    it[this.gold] = existing[OfflineVoteTable.gold] + gold
-                    it[createdAt] = System.currentTimeMillis()
-                }
-            } else {
-                OfflineVoteTable.insert {
-                    it[playerUuid] = uuid.toString()
-                    it[this.gold] = gold
-                    it[createdAt] = System.currentTimeMillis()
-                }
-            }
-        }
-    }
-
-    override fun getPendingOfflineGold(uuid: UUID): Int? = transaction(db) {
-        OfflineVoteTable.selectAll()
-            .where { OfflineVoteTable.playerUuid eq uuid.toString() }
-            .singleOrNull()
-            ?.get(OfflineVoteTable.gold)
-    }
-
-    override fun clearOfflineGold(uuid: UUID) {
-        transaction(db) {
-            OfflineVoteTable.deleteWhere { OfflineVoteTable.playerUuid eq uuid.toString() }
-        }
-    }
-
     override fun savePartyState(state: VotePartyState) {
         transaction(db) {
             VotePartyTable.deleteAll()

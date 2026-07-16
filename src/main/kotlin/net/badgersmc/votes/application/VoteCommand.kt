@@ -11,17 +11,20 @@ class VoteCommand(
     private val voteConfig: VoteConfig,
     private val lang: LangService,
 ) {
-    fun execute(playerName: String, playerUuid: UUID): Component {
+    fun execute(playerName: String, playerUuid: UUID, rewardService: RewardService): Component {
         val stats = voteRepository.getStats(playerUuid)
         val total = stats.totalVotes.toString()
         val streak = stats.currentStreak.toString()
         val best = stats.bestStreak.toString()
+        val multiplier = rewardService.getMiningMultiplier(playerUuid)
+        val multiplierStr = multiplier.toString()
 
         val lines = mutableListOf(
             lang.msg("vote.stats.header", "player" to playerName),
             lang.msg("vote.stats.total", "total" to total),
             lang.msg("vote.stats.streak", "streak" to streak),
             lang.msg("vote.stats.best", "best" to best),
+            lang.msg("vote.stats.multiplier", "multiplier" to multiplierStr),
             lang.msg("vote.stats.empty_separator"),
             lang.msg("vote.stats.site_header"),
         )

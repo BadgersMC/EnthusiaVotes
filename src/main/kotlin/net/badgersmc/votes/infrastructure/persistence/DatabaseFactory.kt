@@ -66,7 +66,7 @@ object VoteTable : Table("votes") {
     val playerName = text("player_name")
     val serviceName = text("service_name")
     val timestamp = long("timestamp")
-    val goldAwarded = integer("gold_awarded")
+    val goldAwarded = integer("gold_awarded").default(0)
 
     override val primaryKey = PrimaryKey(id)
 }
@@ -77,14 +77,6 @@ object PlayerStatsTable : Table("player_stats") {
     val currentStreak = integer("current_streak").default(0)
     val bestStreak = integer("best_streak").default(0)
     val lastVoteAt = long("last_vote_at").nullable()
-
-    override val primaryKey = PrimaryKey(playerUuid)
-}
-
-object OfflineVoteTable : Table("offline_votes") {
-    val playerUuid = text("player_uuid")
-    val gold = integer("gold")
-    val createdAt = long("created_at")
 
     override val primaryKey = PrimaryKey(playerUuid)
 }
@@ -101,7 +93,7 @@ object Migrations {
         // Create all tables up front so hot paths don't run schema checks
         transaction(database) {
             SchemaUtils.createMissingTablesAndColumns(
-                VoteTable, PlayerStatsTable, OfflineVoteTable, VotePartyTable,
+                VoteTable, PlayerStatsTable, VotePartyTable,
             )
         }
     }
