@@ -22,7 +22,6 @@ class VoteService(
         val stats = repo.getStats(playerUuid)
         val streak = stats.currentStreak + 1
 
-        val multiplier = rewardService.streakMultiplier(streak) * votePartyService.getCurrentMultiplier()
         val gold = (config.minGold..config.maxGold).random()
         val record = VoteRecord(
             playerUuid = playerUuid,
@@ -39,7 +38,7 @@ class VoteService(
             repo.queueOfflineGold(playerUuid, gold)
         }
 
-        // VoteParty: check if party just activated
+        // VoteParty: check if party just activated (AFTER saving vote, so threshold voter gets bonus)
         val partyState = votePartyService.onVote()
         if (partyState.justActivated) {
             val partyMsg = lang.msg(
@@ -48,6 +47,9 @@ class VoteService(
             )
             broadcaster.broadcastVoteParty(partyMsg)
         }
+
+        rewardService.cacheMultiplier(playerUuid, streak)
+        val multiplier = rewardService.streakMultiplier(streak) * votePartyService.getCurrentMultiplier()
 
         val message = rewardService.buildVoteMessage(playerName, gold, multiplier, streak, serviceName)
         broadcaster.broadcastVote(message)

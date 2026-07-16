@@ -3,18 +3,28 @@ package net.badgersmc.votes.application
 import net.badgersmc.nexus.i18n.LangService
 import net.kyori.adventure.text.Component
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 
 class RewardService(
     private val voteRepository: VoteRepository,
     private val votePartyService: VotePartyService,
     private val lang: LangService,
 ) {
+    private val multiplierCache = ConcurrentHashMap<UUID, Double>()
+
+    fun cacheMultiplier(uuid: UUID, streak: Int) {
+        val partyMult = votePartyService.getCurrentMultiplier()
+        val streakMult = streakMultiplier(streak)
+        multiplierCache[uuid] = streakMult * partyMult
+    }
+
     fun getMiningMultiplier(uuid: UUID): Double {
+        multiplierCache[uuid]?.let { return it }
         val stats = voteRepository.getStats(uuid)
         val streak = stats.currentStreak
         val streakMult = streakMultiplier(streak)
         val partyMult = votePartyService.getCurrentMultiplier()
-        return streakMult * partyMult
+        return (streakMult * partyMult).also { multiplierCache[uuid] = it }
     }
 
     fun streakMultiplier(streak: Int): Double = when {

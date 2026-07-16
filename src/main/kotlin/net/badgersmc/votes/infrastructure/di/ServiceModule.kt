@@ -109,7 +109,7 @@ class ServiceModule(
         BedrockVoteForm(voteRepository, voteConfig, plugin.logger, lang)
     }
 
-    val voteCommand: VoteCommand by lazy { VoteCommand(voteRepository, voteConfig, lang) }
+    val voteCommand: VoteCommand by lazy { VoteCommand(voteRepository, voteConfig, lang, rewardService) }
     val voteSitesCommand: VoteSitesCommand by lazy { VoteSitesCommand(voteConfig, lang) }
     val voteTopCommand: VoteTopCommand by lazy { VoteTopCommand(voteRepository, lang) }
     val evAdminCommand: EVAdminCommand by lazy { EVAdminCommand(votePartyService, voteRepository, lang) }
@@ -123,7 +123,7 @@ class ServiceModule(
     }
 
     val offlineVoteLoginListener: OfflineVoteLoginListener by lazy {
-        OfflineVoteLoginListener(voteRepository, goldDelivery, lang)
+        OfflineVoteLoginListener(voteRepository, goldDelivery, lang, rewardService)
     }
 
     val placeholderExpansion: EnthusiaVotesExpansion by lazy {

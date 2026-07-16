@@ -36,7 +36,7 @@ class EnthusiaVotesPlugin : JavaPlugin() {
 
         server.commandMap.register(
             "vote",
-            VoteBukkitCommand(services.voteCommand, services.bedrockVoteForm, services.lang, services.rewardService),
+            VoteBukkitCommand(services.voteCommand, services.bedrockVoteForm, services.lang),
         )
 
         server.commandMap.register(

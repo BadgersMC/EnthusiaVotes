@@ -10,8 +10,9 @@ class VoteCommand(
     private val voteRepository: VoteRepository,
     private val voteConfig: VoteConfig,
     private val lang: LangService,
+    private val rewardService: RewardService,
 ) {
-    fun execute(playerName: String, playerUuid: UUID, rewardService: RewardService): Component {
+    fun execute(playerName: String, playerUuid: UUID): Component {
         val stats = voteRepository.getStats(playerUuid)
         val total = stats.totalVotes.toString()
         val streak = stats.currentStreak.toString()
