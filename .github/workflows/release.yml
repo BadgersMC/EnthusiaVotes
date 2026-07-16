@@ -19,21 +19,15 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Compute version
-        id: version
-        run: echo "version=v0.1.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
-
       - name: Build shadowJar
-        env:
-          RELEASE_VERSION: ${{ steps.version.outputs.version }}
-        run: ./gradlew shadowJar --no-daemon -PreleaseVersion="$RELEASE_VERSION"
+        run: ./gradlew shadowJar --no-daemon -PreleaseVersion="v0.1.${{ github.run_number }}"
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.version.outputs.version }}
-          name: EnthusiaVotes ${{ steps.version.outputs.version }}
-          files: build/libs/EnthusiaVotes-${{ steps.version.outputs.version }}.jar
+          tag_name: v0.1.${{ github.run_number }}
+          name: EnthusiaVotes v0.1.${{ github.run_number }}
+          files: build/libs/EnthusiaVotes-v0.1.${{ github.run_number }}.jar
           generate_release_notes: true
           fail_on_unmatched_files: true
           make_latest: true
