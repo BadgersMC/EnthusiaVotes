@@ -14,6 +14,7 @@ class VoteCommand(
 ) {
     fun execute(playerName: String, playerUuid: UUID): Component {
         val stats = voteRepository.getStats(playerUuid)
+        val todaysServices = voteRepository.getTodaysServices(playerUuid)
         val total = stats.totalVotes.toString()
         val streak = stats.currentStreak.toString()
         val best = stats.bestStreak.toString()
@@ -31,9 +32,11 @@ class VoteCommand(
         )
 
         for (site in voteConfig.voteSites) {
-            lines.add(
-                lang.msg("vote.stats.site_entry", "name" to site.name, "url" to site.url)
-            )
+            if (todaysServices.isNotEmpty()) {
+                lines.add(lang.msg("vote.stats.site_entry_voted", "name" to site.name))
+            } else {
+                lines.add(lang.msg("vote.stats.site_entry_unvoted", "name" to site.name, "url" to site.url))
+            }
         }
 
         return Component.join(JoinConfiguration.separator(Component.newline()), lines)

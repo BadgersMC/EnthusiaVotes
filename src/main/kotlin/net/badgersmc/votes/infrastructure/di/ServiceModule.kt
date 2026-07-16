@@ -169,7 +169,7 @@ class ServiceModule(
     }
 
     val voteCommand: VoteCommand by lazy { VoteCommand(voteRepository, voteConfig, lang, rewardService) }
-    val voteSitesCommand: VoteSitesCommand by lazy { VoteSitesCommand(voteConfig, lang) }
+    val voteSitesCommand: VoteSitesCommand by lazy { VoteSitesCommand(voteRepository, voteConfig, lang) }
     val voteTopCommand: VoteTopCommand by lazy { VoteTopCommand(voteRepository, lang) }
     val evAdminCommand: EVAdminCommand by lazy { EVAdminCommand(votePartyService, voteRepository, lang) }
 
