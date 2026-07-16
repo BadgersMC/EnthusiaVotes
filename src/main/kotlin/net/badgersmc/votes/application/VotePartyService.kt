@@ -1,19 +1,19 @@
 package net.badgersmc.votes.application
 
-import net.badgersmc.nexus.scheduler.NexusScheduler
 import net.badgersmc.votes.domain.VotePartyState
 import net.badgersmc.votes.infrastructure.bukkit.EnthusiaVotesPlugin
 import net.badgersmc.votes.infrastructure.config.VoteConfig
 import java.time.Duration
 import java.time.Instant
+import java.util.concurrent.atomic.AtomicInteger
 
 class VotePartyService(
     private val config: VoteConfig,
     private val plugin: EnthusiaVotesPlugin,
+    private val voteRepository: VoteRepository,
     private val speaker: VotePartySpeaker? = null,
 ) {
-    @Volatile
-    private var currentVotes: Int = 0
+    private val currentVotes = AtomicInteger(0)
 
     @Volatile
     private var _active: Boolean = false
@@ -27,11 +27,20 @@ class VotePartyService(
 
     fun getCurrentMultiplier(): Double = if (_active) 2.0 else 1.0
 
-    fun getCurrentVotes(): Int = currentVotes
+    fun getCurrentVotes(): Int = currentVotes.get()
 
     fun getVotesNeeded(): Int = config.votePartyThreshold
 
-    fun getRemainingVotes(): Int = (config.votePartyThreshold - currentVotes).coerceAtLeast(0)
+    fun getRemainingVotes(): Int = (config.votePartyThreshold - currentVotes.get()).coerceAtLeast(0)
+
+    /**
+     * Restores party state from a previously persisted snapshot (e.g., after server restart).
+     */
+    fun loadFrom(partyState: VotePartyState) {
+        _active = partyState.active
+        currentVotes.set(partyState.currentVotes)
+        _startedAt = partyState.startedAt
+    }
 
     /**
      * Increments the vote counter. If the threshold is reached and the party isn't active,
@@ -48,9 +57,9 @@ class VotePartyService(
             )
         }
 
-        currentVotes++
+        val newCount = currentVotes.incrementAndGet()
 
-        if (currentVotes >= config.votePartyThreshold) {
+        if (newCount >= config.votePartyThreshold) {
             activate()
             return VotePartyState(
                 active = true,
@@ -60,9 +69,10 @@ class VotePartyService(
             )
         }
 
+        persist()
         return VotePartyState(
             active = false,
-            currentVotes = currentVotes,
+            currentVotes = currentVotes.get(),
             threshold = config.votePartyThreshold,
             justActivated = false,
         )
@@ -70,9 +80,10 @@ class VotePartyService(
 
     fun activate() {
         _active = true
-        currentVotes = 0
+        currentVotes.set(0)
         _startedAt = Instant.now()
         speaker?.onPartyActivated()
+        persist()
 
         val duration = Duration.ofMinutes(config.votePartyDurationMinutes.toLong())
         val ticks = duration.seconds * 20
@@ -85,16 +96,22 @@ class VotePartyService(
 
     fun deactivate() {
         _active = false
-        currentVotes = 0
+        currentVotes.set(0)
         _startedAt = null
         partyTask = null
         speaker?.onPartyDeactivated()
+        persist()
     }
 
     fun getState(): VotePartyState = VotePartyState(
         active = _active,
-        currentVotes = currentVotes,
+        currentVotes = currentVotes.get(),
         threshold = config.votePartyThreshold,
         justActivated = false,
+        startedAt = _startedAt,
     )
+
+    private fun persist() {
+        voteRepository.savePartyState(getState())
+    }
 }
