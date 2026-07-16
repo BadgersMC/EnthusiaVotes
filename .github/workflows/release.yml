@@ -12,34 +12,24 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
-        with:
-          fetch-depth: 0
-          persist-credentials: false
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@3a4f6e1af504cf6a31855fa899c6aa5355ba6c12  # v4.7.1
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
 
-      - name: Compute version
-        id: version
-        run: |
-          # Version = 0.1.{commit count}
-          COUNT=$(git rev-list --count HEAD)
-          echo "version=v0.1.${COUNT}" >> "$GITHUB_OUTPUT"
-
       - name: Build shadowJar
         env:
-          RELEASE_VERSION: ${{ steps.version.outputs.version }}
-        run: ./gradlew shadowJar --no-daemon -PreleaseVersion="$RELEASE_VERSION"
+          TAG: v0.1.${{ github.run_number }}
+        run: ./gradlew shadowJar --no-daemon -PreleaseVersion="$TAG"
 
       - name: Create Release
-        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65  # v2
-        with:
-          tag_name: ${{ steps.version.outputs.version }}
-          name: EnthusiaVotes ${{ steps.version.outputs.version }}
-          files: build/libs/EnthusiaVotes-${{ steps.version.outputs.version }}.jar
-          generate_release_notes: true
-          fail_on_unmatched_files: true
-          make_latest: true
+        env:
+          TAG: v0.1.${{ github.run_number }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$TAG" \
+            build/libs/EnthusiaVotes-"$TAG".jar \
+            --title "EnthusiaVotes $TAG" \
+            --generate-notes
