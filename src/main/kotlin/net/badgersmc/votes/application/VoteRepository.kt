@@ -13,4 +13,7 @@ interface VoteRepository {
     fun getTotalServerVotes(): Int
     fun savePartyState(state: VotePartyState)
     fun loadPartyState(): VotePartyState?
+    fun queueOfflineGold(uuid: UUID, gold: Int)
+    fun getPendingOfflineGold(uuid: UUID): Int?
+    fun clearOfflineGold(uuid: UUID)
 }

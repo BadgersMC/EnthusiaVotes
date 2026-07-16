@@ -56,6 +56,7 @@ class EnthusiaVotesPlugin : JavaPlugin() {
 
         server.pluginManager.registerEvents(services.voteListener, this)
         server.pluginManager.registerEvents(services.miningListener, this)
+        server.pluginManager.registerEvents(services.offlineVoteLoginListener, this)
 
         // Register PlaceholderAPI expansion if PAPI is present
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {

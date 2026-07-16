@@ -26,6 +26,7 @@ class RewardService(
 
     fun buildVoteMessage(
         playerName: String,
+        gold: Int,
         multiplier: Double,
         streak: Int,
         serviceName: String,
@@ -37,6 +38,7 @@ class RewardService(
             "voteparty.reward_message",
             "player" to playerName,
             "service" to serviceName,
+            "gold" to gold.toString(),
             "multiplier" to multiplier.toString(),
             "streak_text" to streakText,
         )
