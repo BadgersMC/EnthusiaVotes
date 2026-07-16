@@ -7,6 +7,7 @@ import net.badgersmc.votes.domain.VoteRecord
 import net.badgersmc.votes.infrastructure.config.VoteConfig
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
+import org.bukkit.Sound
 import java.util.UUID
 
 class VoteService(
@@ -18,6 +19,14 @@ class VoteService(
     private val config: VoteConfig,
     private val lang: LangService,
 ) {
+    private val voteSound: Sound by lazy {
+        try {
+            Sound.valueOf(config.voteSound.uppercase())
+        } catch (_: IllegalArgumentException) {
+            Sound.ENTITY_EXPERIENCE_ORB_PICKUP
+        }
+    }
+
     fun processVote(playerName: String, playerUuid: UUID, serviceName: String): VoteResult {
         val stats = repo.getStats(playerUuid)
         val streak = stats.currentStreak + 1
@@ -34,6 +43,10 @@ class VoteService(
         val player = Bukkit.getPlayer(playerUuid)
         if (player != null) {
             goldDelivery.deliver(playerUuid, gold)
+            // Audio cue for tabbed-out voters
+            try {
+                player.playSound(player.location, voteSound, 1.0f, 1.0f)
+            } catch (_: Exception) {}
         } else {
             repo.queueOfflineGold(playerUuid, gold)
         }

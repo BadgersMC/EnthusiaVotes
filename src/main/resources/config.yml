@@ -20,6 +20,13 @@ vote-party:
   threshold: 100
   duration-minutes: 5
 
+# Reminder interval in minutes (how often players see the vote reminder)
+reminder-interval-minutes: 5
+
+# Sound played to the player when their vote is processed
+# Valid sounds: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
+vote-sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
+
 # Voting sites displayed in /vote and /votesites
 vote-sites:
   - name: "Planet Minecraft"

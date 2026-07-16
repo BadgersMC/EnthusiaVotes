@@ -24,6 +24,8 @@ data class VoteConfig(
     val maxGold: Int = 10,
     val votePartyThreshold: Int = 100,
     val votePartyDurationMinutes: Int = 5,
+    val reminderIntervalMinutes: Int = 5,
+    val voteSound: String = "entity.experience_orb.pickup",
     val enabledServices: List<String> = emptyList(),
     val storageConfig: StorageConfig = StorageConfig(),
     val voteSites: List<VoteSite> = listOf(
