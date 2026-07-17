@@ -20,10 +20,7 @@ vote-party:
 
 reminder-interval-minutes: 5
 
-# Sound for each individual vote (tabbed-out audio cue)
 vote-sound: "BLOCK_AMETHYST_BLOCK_CHIME"
-
-# Sound + bonus when player votes on all configured sites in one day
 all-sites-sound: "ENTITY_PLAYER_LEVELUP"
 all-sites-bonus-gold: 20
 all-sites-bonus-multiplier: 0.5
@@ -31,9 +28,13 @@ all-sites-bonus-multiplier: 0.5
 vote-sites:
   - name: "Planet Minecraft"
     url: "https://www.planetminecraft.com/server/badgersmc/vote/"
+    service-name: "PlanetMinecraft"
   - name: "MinecraftServers.org"
     url: "https://minecraftservers.org/vote/123456"
+    service-name: "MinecraftServers.org"
   - name: "Minecraft-MP"
     url: "https://minecraft-mp.com/server/123456/vote/"
+    service-name: "Minecraft-MP"
   - name: "TopG"
     url: "https://topg.org/minecraft-servers/server-123456/vote"
+    service-name: "TopG"

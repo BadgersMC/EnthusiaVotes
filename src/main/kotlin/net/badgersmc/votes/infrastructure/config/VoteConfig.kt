@@ -17,6 +17,7 @@ data class MariaDbConfig(
 data class VoteSite(
     val name: String,
     val url: String,
+    val serviceName: String = "",
 )
 
 data class VoteConfig(
@@ -32,9 +33,9 @@ data class VoteConfig(
     val enabledServices: List<String> = emptyList(),
     val storageConfig: StorageConfig = StorageConfig(),
     val voteSites: List<VoteSite> = listOf(
-        VoteSite("Planet Minecraft", "https://www.planetminecraft.com/server/badgersmc/vote/"),
-        VoteSite("MinecraftServers.org", "https://minecraftservers.org/vote/123456"),
-        VoteSite("Minecraft-MP", "https://minecraft-mp.com/server/123456/vote/"),
-        VoteSite("TopG", "https://topg.org/minecraft-servers/server-123456/vote"),
+        VoteSite("Planet Minecraft", "https://www.planetminecraft.com/server/badgersmc/vote/", "PlanetMinecraft"),
+        VoteSite("MinecraftServers.org", "https://minecraftservers.org/vote/123456", "MinecraftServers.org"),
+        VoteSite("Minecraft-MP", "https://minecraft-mp.com/server/123456/vote/", "Minecraft-MP"),
+        VoteSite("TopG", "https://topg.org/minecraft-servers/server-123456/vote", "TopG"),
     ),
 )

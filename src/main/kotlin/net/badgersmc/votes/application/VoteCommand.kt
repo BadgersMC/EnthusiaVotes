@@ -32,7 +32,8 @@ class VoteCommand(
         )
 
         for (site in voteConfig.voteSites) {
-            if (todaysServices.isNotEmpty()) {
+            val voted = site.serviceName.isNotBlank() && site.serviceName in todaysServices
+            if (voted) {
                 lines.add(lang.msg("vote.stats.site_entry_voted", "name" to site.name))
             } else {
                 lines.add(lang.msg("vote.stats.site_entry_unvoted", "name" to site.name, "url" to site.url))

@@ -47,9 +47,10 @@ class VoteService(
             // Audio cue for individual vote (tabbed-out voters)
             try { player.playSound(player.location, voteSound, 1.0f, 1.0f) } catch (_: Exception) {}
 
-            // Check if they voted on all configured sites today
+            // Check if they voted on all configured sites today (match by serviceName)
             val todaysServices = repo.getTodaysServices(playerUuid)
-            allSitesComplete = todaysServices.size >= config.voteSites.size
+            val matchedSites = config.voteSites.count { it.serviceName.isNotBlank() && it.serviceName in todaysServices }
+            allSitesComplete = matchedSites >= config.voteSites.size && config.voteSites.isNotEmpty()
             if (allSitesComplete) {
                 gold += config.allSitesBonusGold
                 try { player.playSound(player.location, allSitesSound, 1.0f, 1.0f) } catch (_: Exception) {}
