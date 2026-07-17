@@ -106,6 +106,8 @@ class ServiceModule(
                 VoteSite(
                     name = site["name"]?.toString() ?: "Unknown",
                     url = site["url"]?.toString() ?: "",
+                    serviceName = site["service-name"]?.toString()?.takeIf { it.isNotBlank() }
+                        ?: VoteSitePresets.resolve(site["url"]?.toString() ?: ""),
                 )
             } ?: emptyList()
 
