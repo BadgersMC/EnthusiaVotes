@@ -104,6 +104,11 @@ object Migrations {
             // SQLite doesn't support ALTER TABLE MODIFY COLUMN, so schema migration
             // must be done manually (or delete votes.db for a clean slate).
             SchemaUtils.create(VoteTable, PlayerStatsTable, OfflineVoteTable, VotePartyTable)
+
+            // Manual column additions for upgrades (SQLite doesn't support MODIFY COLUMN)
+            runCatching {
+                exec("ALTER TABLE player_stats ADD COLUMN multiplier_activated_at INTEGER NOT NULL DEFAULT 0")
+            }
         }
     }
 }
