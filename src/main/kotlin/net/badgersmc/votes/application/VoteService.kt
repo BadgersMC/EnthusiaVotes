@@ -6,13 +6,13 @@ import net.badgersmc.votes.domain.VoteParty
 import net.badgersmc.votes.domain.VoteRecord
 import net.badgersmc.votes.infrastructure.config.VoteConfig
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.Sound
 import java.util.UUID
 
 class VoteService(
     private val repo: VoteRepository,
-    private val rewardService: RewardService,
     private val broadcaster: VoteBroadcaster,
     private val goldDelivery: GoldDelivery,
     private val votePartyService: VotePartyService,
@@ -42,7 +42,6 @@ class VoteService(
         repo.saveVote(record)
 
         val player = Bukkit.getPlayer(playerUuid)
-        val allSitesComplete: Boolean
         if (player != null) {
             // Audio cue for individual vote (tabbed-out voters)
             try { player.playSound(player.location, voteSound, 1.0f, 1.0f) } catch (_: Exception) {}
@@ -50,7 +49,7 @@ class VoteService(
             // Check if they voted on all configured sites today (match by serviceName)
             val todaysServices = repo.getTodaysServices(playerUuid)
             val matchedSites = config.voteSites.count { it.serviceName.isNotBlank() && it.serviceName in todaysServices }
-            allSitesComplete = matchedSites >= config.voteSites.size && config.voteSites.isNotEmpty()
+            val allSitesComplete = matchedSites >= config.voteSites.size && config.voteSites.isNotEmpty()
             if (allSitesComplete) {
                 gold += config.allSitesBonusGold
                 try { player.playSound(player.location, allSitesSound, 1.0f, 1.0f) } catch (_: Exception) {}
@@ -60,7 +59,6 @@ class VoteService(
 
             goldDelivery.deliver(playerUuid, gold)
         } else {
-            allSitesComplete = false
             repo.queueOfflineGold(playerUuid, gold)
         }
 
@@ -74,18 +72,25 @@ class VoteService(
             broadcaster.broadcastVoteParty(partyMsg)
         }
 
-        rewardService.cacheMultiplier(playerUuid, streak)
-        val baseMultiplier = rewardService.streakMultiplier(streak) * votePartyService.getCurrentMultiplier()
-        val multiplier = if (allSitesComplete) baseMultiplier + config.allSitesBonusMultiplier else baseMultiplier
-
-        val message = rewardService.buildVoteMessage(playerName, gold, multiplier, streak, serviceName)
+        val streakText = if (streak > 1) {
+            MiniMessage.miniMessage().serialize(
+                lang.msg("voteparty.streak_suffix", "streak" to streak.toString()),
+            )
+        } else {
+            ""
+        }
+        val message = lang.msg(
+            "voteparty.reward_message",
+            "player" to playerName,
+            "service" to serviceName,
+            "streak_text" to streakText,
+        )
         broadcaster.broadcastVote(message)
 
         return VoteResult(
             record = record,
             stats = stats,
             gold = gold,
-            multiplier = multiplier,
             streak = streak,
             broadcastMessage = message,
         )
@@ -96,7 +101,6 @@ data class VoteResult(
     val record: VoteRecord,
     val stats: PlayerStats,
     val gold: Int,
-    val multiplier: Double,
     val streak: Int,
     val broadcastMessage: Component,
 )

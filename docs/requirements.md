@@ -9,10 +9,10 @@
 **Event-driven.** WHEN a vote is processed, THE SYSTEM SHALL randomly select a gold amount between the configured minimum and maximum and create a RAW_GOLD item stack with Unbreaking 1 and HIDE_ENCHANTS.
 
 ### REQ-003 — Vote streak tracking
-**State-driven.** WHILE a player votes within a 24-hour window of their previous vote, THE SYSTEM SHALL increment their vote streak and apply the corresponding gold multiplier based on streak length.
+**State-driven.** WHILE a player votes within a 24-hour window of their previous vote, THE SYSTEM SHALL increment their vote streak.
 
 ### REQ-004 — Vote Party activation
-**Event-driven.** WHEN the total server vote count reaches the configured threshold, THE SYSTEM SHALL activate a Vote Party that doubles all gold rewards and auto-deactivates after the configured duration.
+**Event-driven.** WHEN the total server vote count reaches the configured threshold, THE SYSTEM SHALL activate a Vote Party and auto-deactivate it after the configured duration.
 
 ### REQ-005 — Vote Party broadcasts
 **Event-driven.** WHEN a Vote Party activates, THE SYSTEM SHALL broadcast an announcement to all players using MiniMessage gradient formatting with shadow text.

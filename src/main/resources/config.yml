@@ -23,7 +23,6 @@ reminder-interval-minutes: 5
 vote-sound: "BLOCK_AMETHYST_BLOCK_CHIME"
 all-sites-sound: "ENTITY_PLAYER_LEVELUP"
 all-sites-bonus-gold: 20
-all-sites-bonus-multiplier: 0.5
 
 vote-sites:
   - name: "Planet Minecraft"

@@ -6,7 +6,6 @@ import net.badgersmc.nexus.scheduler.NexusScheduler
 import net.badgersmc.votes.application.*
 import net.badgersmc.votes.infrastructure.bukkit.BukkitGoldDelivery
 import net.badgersmc.votes.infrastructure.bukkit.EnthusiaVotesPlugin
-import net.badgersmc.votes.infrastructure.bukkit.MiningListener
 import net.badgersmc.votes.infrastructure.bukkit.OfflineVoteLoginListener
 import net.badgersmc.votes.infrastructure.bukkit.ProxiedDeliveryService
 import net.badgersmc.votes.infrastructure.bukkit.VoteReminder
@@ -120,7 +119,6 @@ class ServiceModule(
                 voteSound = data["vote-sound"]?.toString() ?: "BLOCK_AMETHYST_BLOCK_CHIME",
                 allSitesSound = data["all-sites-sound"]?.toString() ?: "ENTITY_PLAYER_LEVELUP",
                 allSitesBonusGold = ((data["all-sites-bonus-gold"] ?: data["allSitesBonusGold"]) as? Number)?.toInt() ?: 20,
-                allSitesBonusMultiplier = ((data["all-sites-bonus-multiplier"] ?: data["allSitesBonusMultiplier"]) as? Number)?.toDouble() ?: 0.5,
                 storageConfig = storage,
                 voteSites = sites,
             )
@@ -150,10 +148,6 @@ class ServiceModule(
         VoteScheduler(plugin, votePartyService, voteConfig, voteReminder)
     }
 
-    val rewardService: RewardService by lazy {
-        RewardService(voteRepository, votePartyService, lang)
-    }
-
     val voteBroadcaster: VoteBroadcaster by lazy {
         BukkitVoteBroadcaster()
     }
@@ -163,14 +157,14 @@ class ServiceModule(
     }
 
     val voteService: VoteService by lazy {
-        VoteService(voteRepository, rewardService, voteBroadcaster, goldDelivery, votePartyService, voteConfig, lang)
+        VoteService(voteRepository, voteBroadcaster, goldDelivery, votePartyService, voteConfig, lang)
     }
 
     val bedrockVoteForm: BedrockVoteForm by lazy {
         BedrockVoteForm(voteRepository, voteConfig, plugin.logger, lang)
     }
 
-    val voteCommand: VoteCommand by lazy { VoteCommand(voteRepository, voteConfig, lang, rewardService) }
+    val voteCommand: VoteCommand by lazy { VoteCommand(voteRepository, voteConfig, lang) }
     val voteSitesCommand: VoteSitesCommand by lazy { VoteSitesCommand(voteRepository, voteConfig, lang) }
     val voteTopCommand: VoteTopCommand by lazy { VoteTopCommand(voteRepository, lang) }
     val evAdminCommand: EVAdminCommand by lazy { EVAdminCommand(votePartyService, voteRepository, lang) }
@@ -179,12 +173,8 @@ class ServiceModule(
         VotifierVoteListener(voteService)
     }
 
-    val miningListener: MiningListener by lazy {
-        MiningListener(rewardService, lang)
-    }
-
     val offlineVoteLoginListener: OfflineVoteLoginListener by lazy {
-        OfflineVoteLoginListener(voteRepository, goldDelivery, lang, rewardService)
+        OfflineVoteLoginListener(voteRepository, goldDelivery, lang)
     }
 
     val placeholderExpansion: EnthusiaVotesExpansion by lazy {

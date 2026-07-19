@@ -21,7 +21,7 @@ forbidden: []
 | Layer | Package | Contents |
 |---|---|---|
 | domain | `net.badgersmc.votes.domain` | `VoteRecord`, `PlayerStats`, `VoteParty`, `VotePartyState` |
-| application | `net.badgersmc.votes.application` | `VoteService`, `RewardService`, `VotePartyService`, `VoteCommand`, `VoteSitesCommand`, `EVAdminCommand`, `VoteTopCommand`, `VoteRepository`, `VoteBroadcaster`, `GoldDelivery`, `VotePartySpeaker` |
+| application | `net.badgersmc.votes.application` | `VoteService`, `VotePartyService`, `VoteCommand`, `VoteSitesCommand`, `EVAdminCommand`, `VoteTopCommand`, `VoteRepository`, `VoteBroadcaster`, `GoldDelivery`, `VotePartySpeaker` |
 | infrastructure | `net.badgersmc.votes.infrastructure.bukkit` | `EnthusiaVotesPlugin`, `VotifierVoteListener`, `VoteBukkitCommand`, `VoteSitesBukkitCommand`, `EVAdminBukkitCommand`, `VoteTopBukkitCommand`, `VoteItemFactory`, `BukkitGoldDelivery`, `ProxiedDeliveryService`, `OfflineVoteLoginListener`, `VoteReminder` |
 | infrastructure | `net.badgersmc.votes.infrastructure.config` | `VoteConfig`, `VoteSite`, `StorageConfig`, `MariaDbConfig` |
 | infrastructure | `net.badgersmc.votes.infrastructure.di` | `ServiceModule`, `VoteScheduler` |

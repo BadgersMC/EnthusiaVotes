@@ -26,13 +26,12 @@
 - [x] Triggers `VotePartyService.onVote()` for party tracking
 - [x] Broadcasts vote announcement via `VoteBroadcaster`
 
-### TASK-004 — Reward service with streak multipliers
+### TASK-004 — Vote rewards
 **Tag:** TDD
 **References:** REQ-002, REQ-003, REQ-004
 **Evidence:** ✅
-- [x] `RewardService.calculateGold()` — randomizes gold with streak + party multipliers
-- [x] `RewardService.buildVoteMessage()` — MiniMessage shadow text
-- [x] Streak multipliers: 1.5x (3d), 2x (7d), 3x (30d)
+- [x] Randomized gold rewards
+- [x] MiniMessage vote broadcasts
 
 ### TASK-005 — VoteParty state machine
 **Tag:** TDD
@@ -40,7 +39,6 @@
 **Evidence:** ✅
 - [x] `VotePartyService` — `AtomicInteger` vote counter, threshold-based activation (default 100)
 - [x] Auto-deactivation via Bukkit scheduler after configurable duration (default 5m)
-- [x] `getCurrentMultiplier()` returns 2.0 during party, 1.0 otherwise
 - [x] Broadcast on activation via gradient MiniMessage shadow text
 
 ### TASK-006 — /vote command

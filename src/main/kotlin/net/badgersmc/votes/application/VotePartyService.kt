@@ -25,8 +25,6 @@ class VotePartyService(
 
     fun isPartyActive(): Boolean = _active
 
-    fun getCurrentMultiplier(): Double = if (_active) 2.0 else 1.0
-
     fun getCurrentVotes(): Int = currentVotes.get()
 
     fun getVotesNeeded(): Int = config.votePartyThreshold
