@@ -139,7 +139,9 @@ class ServiceModule(
     }
 
     val votePartyService: VotePartyService by lazy {
-        VotePartyService(voteConfig, plugin, voteRepository, votePartySpeaker)
+        VotePartyService(voteConfig, { ticks, action ->
+            plugin.server.scheduler.runTaskLater(plugin, Runnable { action() }, ticks)
+        }, voteRepository, votePartySpeaker)
     }
 
     val voteReminder: VoteReminder by lazy {
@@ -163,7 +165,7 @@ class ServiceModule(
     }
 
     val voteService: VoteService by lazy {
-        VoteService(voteRepository, rewardService, voteBroadcaster, goldDelivery, votePartyService, voteConfig, lang)
+        VoteService(voteRepository, rewardService, voteBroadcaster, goldDelivery, votePartyService, voteConfig, lang, net.badgersmc.votes.infrastructure.bukkit.BukkitVoteSoundPlayer())
     }
 
     val bedrockVoteForm: BedrockVoteForm by lazy {

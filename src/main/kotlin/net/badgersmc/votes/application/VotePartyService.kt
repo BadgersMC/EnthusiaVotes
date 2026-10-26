@@ -1,15 +1,13 @@
 package net.badgersmc.votes.application
 
 import net.badgersmc.votes.domain.VotePartyState
-import net.badgersmc.votes.infrastructure.bukkit.EnthusiaVotesPlugin
-import net.badgersmc.votes.infrastructure.config.VoteConfig
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.atomic.AtomicInteger
 
 class VotePartyService(
-    private val config: VoteConfig,
-    private val plugin: EnthusiaVotesPlugin,
+    private val config: VoteSettings,
+    private val schedule: (Long, () -> Unit) -> Any,
     private val voteRepository: VoteRepository,
     private val speaker: VotePartySpeaker? = null,
 ) {
@@ -87,11 +85,7 @@ class VotePartyService(
 
         val duration = Duration.ofMinutes(config.votePartyDurationMinutes.toLong())
         val ticks = duration.seconds * 20
-        partyTask = plugin.server.scheduler.runTaskLater(
-            plugin,
-            Runnable { deactivate() },
-            ticks,
-        )
+        partyTask = schedule(ticks) { deactivate() }
     }
 
     fun deactivate() {

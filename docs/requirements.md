@@ -42,3 +42,5 @@
 
 ### REQ-013 — MiniMessage shadow text
 **Ubiquitous.** THE SYSTEM SHALL use Adventure MiniMessage serialization with shadow wrapper for all user-facing messages matching the EnthusiaMarket presentation style.
+
+- REQ-SOUND-001: WHEN a vote cue is configured as a namespaced resource-pack event THE SYSTEM SHALL play that exact event while retaining legacy names, invalid-value fallback, online recipient checks, vote processing and rewards.

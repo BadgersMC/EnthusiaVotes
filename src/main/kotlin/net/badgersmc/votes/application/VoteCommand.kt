@@ -1,14 +1,13 @@
 package net.badgersmc.votes.application
 
 import net.badgersmc.nexus.i18n.LangService
-import net.badgersmc.votes.infrastructure.config.VoteConfig
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
 import java.util.UUID
 
 class VoteCommand(
     private val voteRepository: VoteRepository,
-    private val voteConfig: VoteConfig,
+    private val voteConfig: VoteSettings,
     private val lang: LangService,
     private val rewardService: RewardService,
 ) {

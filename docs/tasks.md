@@ -161,3 +161,12 @@
 ## Pending
 
 *(all tasks complete)*
+
+### TASK-SOUND-001 — Exact vote sound events
+
+**References:** REQ-SOUND-001
+**Evidence:** Existing Sound.valueOf replaces custom events with an experience-orb cue. Add a sound port and Bukkit adapter; custom routing and offline recipient regressions, canonical build and TEST activation pending.
+
+Architecture refinement: current main LayerRulesTest does not compile against pinned Konsist 0.17.3. Reused the supported checks from existing local reference f6d0cd2 (without editing that worktree), exposing actual app-to-config imports. Added read-only application settings contracts implemented by unchanged infrastructure configuration DTOs, and moved the existing party scheduler callback behind an injected function. No test exclusion or suppression; full gate will be rerun.
+
+Scheduler regression verifies the same five-minute tick delay, threshold, persisted activation and persisted deactivation; no timing/data policy changed.

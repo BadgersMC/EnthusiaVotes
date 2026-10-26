@@ -4,10 +4,8 @@ import net.badgersmc.nexus.i18n.LangService
 import net.badgersmc.votes.domain.PlayerStats
 import net.badgersmc.votes.domain.VoteParty
 import net.badgersmc.votes.domain.VoteRecord
-import net.badgersmc.votes.infrastructure.config.VoteConfig
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
-import org.bukkit.Sound
 import java.util.UUID
 
 class VoteService(
@@ -16,18 +14,10 @@ class VoteService(
     private val broadcaster: VoteBroadcaster,
     private val goldDelivery: GoldDelivery,
     private val votePartyService: VotePartyService,
-    private val config: VoteConfig,
+    private val config: VoteSettings,
     private val lang: LangService,
+    private val soundPlayer: VoteSoundPlayer,
 ) {
-    private val voteSound: Sound by lazy { parseSound(config.voteSound) }
-    private val allSitesSound: Sound by lazy { parseSound(config.allSitesSound) }
-
-    private fun parseSound(name: String): Sound = try {
-        Sound.valueOf(name.uppercase())
-    } catch (_: IllegalArgumentException) {
-        Sound.ENTITY_EXPERIENCE_ORB_PICKUP
-    }
-
     fun processVote(playerName: String, playerUuid: UUID, serviceName: String): VoteResult {
         val stats = repo.getStats(playerUuid)
 
@@ -44,7 +34,7 @@ class VoteService(
         val allSitesComplete: Boolean
         if (player != null) {
             // Audio cue for individual vote (tabbed-out voters)
-            try { player.playSound(player.location, voteSound, 1.0f, 1.0f) } catch (_: Exception) {}
+            try { soundPlayer.play(playerUuid, config.voteSound) } catch (_: Exception) {}
 
             // Check if they voted on all configured sites today (match by serviceName)
             val todaysServices = repo.getTodaysServices(playerUuid)
@@ -52,7 +42,7 @@ class VoteService(
             allSitesComplete = matchedSites >= config.voteSites.size && config.voteSites.isNotEmpty()
             if (allSitesComplete) {
                 gold += config.allSitesBonusGold
-                try { player.playSound(player.location, allSitesSound, 1.0f, 1.0f) } catch (_: Exception) {}
+                try { soundPlayer.play(playerUuid, config.allSitesSound) } catch (_: Exception) {}
                 val bonusMsg = lang.msg("voteparty.all_sites_bonus", "bonus" to config.allSitesBonusGold.toString())
                 player.sendMessage(bonusMsg)
             }

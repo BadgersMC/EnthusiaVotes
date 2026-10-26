@@ -1,5 +1,8 @@
 package net.badgersmc.votes.infrastructure.config
 
+import net.badgersmc.votes.application.VoteSettings
+import net.badgersmc.votes.application.VoteSiteInfo
+
 data class StorageConfig(
     val backend: String = "sqlite",
     val file: String = "votes.db",
@@ -15,27 +18,27 @@ data class MariaDbConfig(
 )
 
 data class VoteSite(
-    val name: String,
-    val url: String,
-    val serviceName: String = "",
-)
+    override val name: String,
+    override val url: String,
+    override val serviceName: String = "",
+) : VoteSiteInfo
 
 data class VoteConfig(
-    val minGold: Int = 1,
-    val maxGold: Int = 10,
-    val votePartyThreshold: Int = 100,
-    val votePartyDurationMinutes: Int = 5,
+    override val minGold: Int = 1,
+    override val maxGold: Int = 10,
+    override val votePartyThreshold: Int = 100,
+    override val votePartyDurationMinutes: Int = 5,
     val reminderIntervalMinutes: Int = 5,
-    val voteSound: String = "BLOCK_AMETHYST_BLOCK_CHIME",
-    val allSitesSound: String = "ENTITY_PLAYER_LEVELUP",
-    val allSitesBonusGold: Int = 20,
-    val allSitesBonusMultiplier: Double = 0.5,
+    override val voteSound: String = "BLOCK_AMETHYST_BLOCK_CHIME",
+    override val allSitesSound: String = "ENTITY_PLAYER_LEVELUP",
+    override val allSitesBonusGold: Int = 20,
+    override val allSitesBonusMultiplier: Double = 0.5,
     val enabledServices: List<String> = emptyList(),
     val storageConfig: StorageConfig = StorageConfig(),
-    val voteSites: List<VoteSite> = listOf(
+    override val voteSites: List<VoteSite> = listOf(
         VoteSite("Planet Minecraft", "https://www.planetminecraft.com/server/badgersmc/vote/", "PlanetMinecraft"),
         VoteSite("MinecraftServers.org", "https://minecraftservers.org/vote/123456", "MinecraftServers.org"),
         VoteSite("Minecraft-MP", "https://minecraft-mp.com/server/123456/vote/", "Minecraft-MP"),
         VoteSite("TopG", "https://topg.org/minecraft-servers/server-123456/vote", "TopG"),
     ),
-)
+) : VoteSettings
